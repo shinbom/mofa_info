@@ -29,6 +29,11 @@ export default {
     created () {
         // ○, 다., ※인 경우, 줄바꿈 처리가 되도록 해야 함.
         // 콘텐츠에 제목과 동일한 텍스트가 있는 경우에 제거
+        console.log(this.selectedNotice.txt_origin_cn);
+        // console.log(this.selectedNotice.txt_origin_cn.split(/^[&nbsp;&nbsp;|①|②|③|④|⑤|□|○|△|\*.][가-하]다\.$/g));
+
+        // replace가 좋을지, split후, 텍스트 반환이 좋을지 고민이 필요해 보임.
+        // this.selectedNotice.txt_origin_cn.split(/&nbsp;&nbsp;|①|②|③|④|⑤|□|○|△|\*.|[가-하]다\.$/g);
         this.notice_detail = this.selectedNotice.txt_origin_cn.replace(/&nbsp;&nbsp;|①|②|③|④|⑤|□|○|△|\*.|다\./g, (x) => {
             if (x == '다.') {
                 return x + '<br>';

@@ -1,6 +1,8 @@
 <template>
   <header class="wrap">
-    <h1>해외여행 정보 제공</h1>
+    <h1>
+      <router-link to="/">해외여행 정보 제공</router-link>
+    </h1>
     <p>출처 정보 : 외교부, 대한무역투자진흥공사</p>
   </header>
 </template>

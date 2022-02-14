@@ -156,8 +156,15 @@ export default {
             flex :1;
             margin-right:20px;
             figure{
+                position:relative;
+                height:0;
+                padding-top:47%;
                 img{
-                    height:160px;
+                    position:absolute;
+                    top:50%;
+                    left:50%;
+                    height:100%;
+                    transform:translate(-50%, -50%);
                 }
             }
             h3{
@@ -169,11 +176,19 @@ export default {
             .info_list {
                li {
                     padding:5px 0;
-                    span{display:block;}
+                    .title{
+                        padding:0 10px;
+                        border-radius:0 10px 10px 0;
+                        background-color:#e2e2e2;
+                    }
                     .desc{
+                        display:block;
+                        margin-top:5px;
                         font-size:14px;
                     }
-                    &:nth-child(n+2){border-top:1px solid #cacaca;}
+                    &:nth-child(n+2){
+                        border-top:1px solid #cacaca;
+                    }
                } 
             }
             .btn_lists{
@@ -186,6 +201,7 @@ export default {
                         padding:10px;
                         border-radius:10px;
                         background-color:#4880ee;
+                        color:#fff;
                     }
                 }
             }

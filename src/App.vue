@@ -21,6 +21,7 @@ export default {
 html, body, h1, h2, h3, ul, ol, li, dl, dt, dd, input, main, header, legend, figure, div{margin:0; padding:0; box-sizing:border-box; font-family: 'Noto Sans KR', sans-serif;}
 li{list-style:none;}
 button{padding:0; background:none; border:none; cursor:pointer}
+a{color:inherit; text-decoration:none;}
 
 html{height:100vh;}
 .wrap{

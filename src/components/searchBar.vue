@@ -13,7 +13,7 @@
         <ol id="country_list" ref="countryList">
         </ol>
         <button type="button" id="submit_btn" @click="getCountryInfo">
-            <font-awesome-icon :icon="['fas', 'glasses']" size="2x"/>
+            <font-awesome-icon :icon="['fas', 'search']" size="x"/>
         </button>
     </div>
 </template>
@@ -60,8 +60,7 @@ export default {
         },
         getCountry (e) {
             let input_text = e.target.value;
-            let result = this.countryList.filter(x => x.country_nm.indexOf(input_text) >= 0);
-            console.log(result);
+            this.retsultCountryList = this.countryList.filter(x => x.country_nm.indexOf(input_text) >= 0);
         },
         setCountry (e) {
             this.searchText = e.target.textContent
