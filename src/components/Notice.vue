@@ -2,18 +2,16 @@
     <div id="notice_list" class="wrap">
         <h3>외교부 공지사항</h3>
         <ul>
-            <li v-for="(item, index) in noticeArray" v-bind:key="index">
-                <button type="button" @click="getDetail(index)" ref="notice_list_btn">
+            <li v-for="(item, index) in noticeArray" :key="index">
+                <button type="button" @click="activeModal()" ref="notice_list_btn">
                     <span class="title">{{noticeArray[index].title}}</span>
                     <span class="date">{{noticeArray[index].written_dt}}</span>
                 </button>
             </li>
         </ul>
         <Modal 
-        v-if="modalStatus" 
-        v-on:modalClose="close" 
-        v-bind:selectedIndex="noticeSelectedIndex" 
-        v-bind:selectedNotice="noticeArray[noticeSelectedIndex]"></Modal>
+        v-if="this.$store.modalStatus" 
+        :bind:selectedNotice="this.$store.state.selectedIndex"></Modal>
     </div>
 </template>
 
@@ -21,12 +19,12 @@
 import axios from 'axios';
 import Modal from './Modal.vue';
 import {apiServiceKey} from '../router/apiInfo';
+import { mapMutations } from 'vuex';
 
 export default {
     name : 'notice',
     data () {
         return {
-          noticeSelectedIndex : 0,
           noticeArray : [],
           modalStatus : false,
         }
@@ -45,14 +43,8 @@ export default {
       });
     },
     methods : {
-      getDetail (index) {
-        this.modalStatus = true;
-        this.noticeSelectedIndex = index;
-      },
-      close () {
-        this.modalStatus = false;
-      }
-    }
+      ...mapMutations(['activeModal']),
+    },
 }
 </script>
 

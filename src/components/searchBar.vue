@@ -7,13 +7,13 @@
             @keydown="checkInputText"
             @keyup="getCountry"
             @change="getCountry"
-            v-bind:class="{ 'innerText' : searchTextStatus}"
+            :class="{ 'innerText' : searchTextStatus}"
             autocomplete="off"
         >
-        <label for="searchText">국가 검색어 입력<span v-if="errorStatus">해주세요</span></label>
+        <label for="searchText" :class="{error : errorStatus}">국가 검색어</label>
         <!-- Custom DataList -->
         <ol id="country_list" ref="countryList" v-if="recommendStatus">
-            <li v-for="(item, index) in retsultCountryList" v-bind:key="index">
+            <li v-for="(item, index) in retsultCountryList" :key="index">
                 <button type="button" @click="setCountry">{{item.country_nm}}</button>
             </li>
         </ol>
@@ -122,6 +122,9 @@ export default {
         transform:translate(0, -50%);
         color:#909090;
         transition:font-size 0.3s, top 0.3s;
+        &.error{
+            color:red;
+        }
     }
     #country_list{
         width:200px;

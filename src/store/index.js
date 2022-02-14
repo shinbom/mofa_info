@@ -8,9 +8,12 @@ export const store = new Vuex.Store({
         selectedIndex : 0,
         modalStatus : false,
     },
-    getters : {
+    mutations : {
         activeModal () {
             this.state.modalStatus = true;
         },
+        closeModal () {
+            this.state.modalStatus = false;
+        }
     }
 })

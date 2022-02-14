@@ -44,14 +44,14 @@
                     <h4>{{this.countryInfomation.country_name}} 한국발 입국자 조치</h4>
                     <p v-if="this.countryInfomation.covidNotice.length == 0" class="not_work">{{this.countryInfomation.country}} 한국발 입국자 조치가 없습니다.</p>
                     <ul v-else>
-                        <li v-for="(item, index) in this.countryInfomation.covidNotice" v-bind:key="index">{{item}}</li>
+                        <li v-for="(item, index) in this.countryInfomation.covidNotice" :key="index">{{item}}</li>
                     </ul>
                 </section>
                 <section>
                     <h4>{{this.countryInfomation.country_name}} 안전공지</h4>
                     <p v-if="this.countryInfomation.safetyNotice.length == 0">{{this.countryInfomation.country}} 안전공지가 없습니다.</p>
                     <ul v-else>
-                        <li v-for="(item, index) in this.countryInfomation.safetyNotice[0]" v-bind:key="index">
+                        <li v-for="(item, index) in this.countryInfomation.safetyNotice[0]" :key="index">
                             <button type="button">{{item.title}}</button>
                         </li>
                     </ul>
