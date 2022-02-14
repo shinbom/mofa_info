@@ -4,9 +4,9 @@
             <header>
                 <div class="left_box">
                     <figure>
-                        <img :src="`${this.imageUrl}`" alt="">
+                        <img :src="`${this.countryInfomation.imageUrl}`" alt="">
                     </figure>
-                    <h3>{{this.country}}</h3>
+                    <h3>{{this.countryInfomation.country_name}}</h3>
                 </div>
                 <div class="right_box">
                     <ul class="info_list">
@@ -41,61 +41,58 @@
             </header>
             <div>
                 <section>
-                    <h4>{{this.country}} 한국발 입국자 조치</h4>
-                    <p v-if="this.covidNotice.length == 0" class="not_work">{{this.country}} 한국발 입국자 조치가 없습니다.</p>
+                    <h4>{{this.countryInfomation.country_name}} 한국발 입국자 조치</h4>
+                    <p v-if="this.countryInfomation.covidNotice.length == 0" class="not_work">{{this.countryInfomation.country}} 한국발 입국자 조치가 없습니다.</p>
                     <ul v-else>
-                        <li v-for="(item, index) in covidNotice" v-bind:key="index">{{item}}</li>
+                        <li v-for="(item, index) in this.countryInfomation.covidNotice" v-bind:key="index">{{item}}</li>
                     </ul>
                 </section>
                 <section>
-                    <h4>{{this.country}} 안전공지</h4>
-                    <p v-if="this.safetyNotice.length == 0">{{this.country}} 안전공지가 없습니다.</p>
+                    <h4>{{this.countryInfomation.country_name}} 안전공지</h4>
+                    <p v-if="this.countryInfomation.safetyNotice.length == 0">{{this.countryInfomation.country}} 안전공지가 없습니다.</p>
                     <ul v-else>
-                        <li v-for="(item, index) in safetyNotice[0]" v-bind:key="index">
+                        <li v-for="(item, index) in this.countryInfomation.safetyNotice[0]" v-bind:key="index">
                             <button type="button">{{item.title}}</button>
                         </li>
                     </ul>
                 </section>
             </div>
         </div>
-        <Modal
-        v-if="modalStatus" 
-        v-on:modalClose="close" 
-        v-bind:selectedIndex="noticeSelectedIndex" 
-        v-bind:selectedNotice="noticeArray[noticeSelectedIndex]"
-        ></Modal>
+        <!-- <Modal></Modal> -->
     </main>
 </template>
 
 <script>
 import axios from 'axios';
-import Modal from '../components/Modal.vue';
+// import Modal from '../components/Modal.vue';
+import {apiServiceKey} from '../router/apiInfo';
 
 export default {
     name : 'Detail',
     data () {
         return {
-            country : '',
-            imageUrl : '',
             countryInfomation : {
+                country_name : this.$route.query.country_name,
+                country_en : this.$route.query.country_en,
+                imageUrl : '',
                 language : '',
                 climateInfo : '',
                 price : '',
                 usageInfo : '',
                 visitInfo : '',
                 emergencyInfo : '',
-                internetStatus : ''
+                internetStatus : '',
+                covidNotice :[], 
+                safetyNotice : [],
             },
-            covidNotice :[], 
-            safetyNotice : [],
             modalStatus : false,
         }
     },
     components :{
-        Modal
+        // Modal
     },
     created () {
-        axios.get('/B410001/natnInfoService/natnInfo?serviceKey=dZzpRZXHtwvV1EXFqZd2pMdafCSAEzE%2Bze5XLaWmhL401G2v3rR%2FQViVia3LNGnTHHmiB2VLQz03b8kO5i9ZNg%3D%3D&type=json&isoWd2CntCd=AE')
+        axios.get(`/B410001/natnInfoService/natnInfo?${apiServiceKey}&type=json&isoWd2CntCd=${this.countryInfomation.country_en}`)
         .then((response) => {
             const getCountryData = response.data;
             this.countryInfomation.language = getCountryData.items[0].langNm; // 언어정보
@@ -111,21 +108,21 @@ export default {
         })
 
         // 국가 정보 및 지도 데이터 요청
-        axios.get('/1262000/CountryFlagService2/getCountryFlagList2?serviceKey=dZzpRZXHtwvV1EXFqZd2pMdafCSAEzE%2Bze5XLaWmhL401G2v3rR%2FQViVia3LNGnTHHmiB2VLQz03b8kO5i9ZNg%3D%3D&numOfRows=10&cond[country_nm::EQ]=그리스')
+        axios.get(`/1262000/CountryFlagService2/getCountryFlagList2?${apiServiceKey}&numOfRows=10&cond[country_iso_alp2::EQ]=${this.countryInfomation.country_en}`)
         .then((response) =>  {
             let countryFlag = response.data.data[0];
-            this.country = countryFlag.country_nm;
-            this.imageUrl = countryFlag.download_url;
+            this.countryInfomation.country = countryFlag.country_nm;
+            this.countryInfomation.imageUrl = countryFlag.download_url;
         })
         .catch((error) => {
             console.log(`국가를 불러오는 데 실패하였습니다. : ${error}`);
         })
 
         // 국가 별 한국발 입국자 조치 데이터 요청
-        axios.get('/1262000/CountryKoreaDepartureService/getCountryKoreaDepartureList?serviceKey=dZzpRZXHtwvV1EXFqZd2pMdafCSAEzE%2Bze5XLaWmhL401G2v3rR%2FQViVia3LNGnTHHmiB2VLQz03b8kO5i9ZNg%3D%3D&returnType=JSON&numOfRows=10&cond[country_nm::EQ]=그리스').then((response) => {
+        axios.get(`/1262000/CountryKoreaDepartureService/getCountryKoreaDepartureList?${apiServiceKey}&returnType=JSON&numOfRows=10&cond[country_iso_alp2::EQ]=${this.countryInfomation.country_en}`).then((response) => {
            let covidNoticeList = response.data.data;
            if ( covidNoticeList.length > 0 ) {
-            this.covidNotice.push(covidNoticeList);
+            this.countryInfomation.covidNotice.push(covidNoticeList);
            }
         })
         .catch ((error) => {
@@ -133,9 +130,9 @@ export default {
         })
 
         // 국가별 안전공지 데이터 요청
-        axios.get('/1262000/CountrySafetyService3/getCountrySafetyList3?serviceKey=dZzpRZXHtwvV1EXFqZd2pMdafCSAEzE%2Bze5XLaWmhL401G2v3rR%2FQViVia3LNGnTHHmiB2VLQz03b8kO5i9ZNg%3D%3D&returnType=JSON&numOfRows=10&cond[country_nm::EQ]=그리스').then((response) => {
+        axios.get(`/1262000/CountrySafetyService3/getCountrySafetyList3?${apiServiceKey}&returnType=JSON&numOfRows=10&cond[country_iso_alp2::EQ]=${this.countryInfomation.country_en}`).then((response) => {
             let safetyNoticeList = response.data.data;
-            this.safetyNotice.push(safetyNoticeList);
+            this.countryInfomation.safetyNotice.push(safetyNoticeList);
         })
         .catch ((error) => {
             console.log(`안전공지를 불러오는 데 실패하였습니다. : ${error}`);

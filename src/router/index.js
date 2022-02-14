@@ -11,13 +11,15 @@ const routes = [
         redirect : '/home'
     },
     {
+        name : 'home',
         path : '/home',
         component : Main
     },
     {
+        name : 'country',
         path : '/country',
         component : Detail,
-        
+        props : true
     }
 ]
 
@@ -25,3 +27,4 @@ export const router = new VueRouter({ // eslint-disable-line no-unused-vars
     mode : 'history',
     routes
 });
+

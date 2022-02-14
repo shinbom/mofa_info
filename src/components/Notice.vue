@@ -20,6 +20,7 @@
 <script>
 import axios from 'axios';
 import Modal from './Modal.vue';
+import {apiServiceKey} from '../router/apiInfo';
 
 export default {
     name : 'notice',
@@ -34,7 +35,7 @@ export default {
       Modal
     },
     mounted () {
-      axios.get('/1262000/NoticeService2/getNoticeList2?serviceKey=dZzpRZXHtwvV1EXFqZd2pMdafCSAEzE%2Bze5XLaWmhL401G2v3rR%2FQViVia3LNGnTHHmiB2VLQz03b8kO5i9ZNg%3D%3D&returnType=JSON&numOfRows=10&pageNo=1')
+      axios.get(`/1262000/NoticeService2/getNoticeList2?${apiServiceKey}&returnType=JSON&numOfRows=10&pageNo=1`)
       .then((response) =>  {
         let notice_array = response.data.data;
         this.noticeArray = notice_array;

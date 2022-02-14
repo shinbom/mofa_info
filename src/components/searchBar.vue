@@ -4,38 +4,44 @@
             id="searchText" 
             ref="searchText" 
             v-model="searchText" 
-            @blur="checkInputText"
+            @keydown="checkInputText"
             @keyup="getCountry"
+            @change="getCountry"
             v-bind:class="{ 'innerText' : searchTextStatus}"
+            autocomplete="off"
         >
-        <label for="searchText">국가 검색어 입력</label>
+        <label for="searchText">국가 검색어 입력<span v-if="errorStatus">해주세요</span></label>
         <!-- Custom DataList -->
-        <ol id="country_list" ref="countryList">
+        <ol id="country_list" ref="countryList" v-if="recommendStatus">
+            <li v-for="(item, index) in retsultCountryList" v-bind:key="index">
+                <button type="button" @click="setCountry">{{item.country_nm}}</button>
+            </li>
         </ol>
-        <button type="button" id="submit_btn" @click="getCountryInfo">
-            <font-awesome-icon :icon="['fas', 'search']" size="x"/>
+        <button type="button" id="submit_btn" ref="submit_btn" @click="getCountryInfo">
+            <font-awesome-icon :icon="['fas', 'search']" size="1x"/>
         </button>
     </div>
 </template>
 
 <script>
 import axios from 'axios';
-
-const requestUrl = "http://apis.data.go.kr/1262000/";
-const serviceKey = "serviceKey=dZzpRZXHtwvV1EXFqZd2pMdafCSAEzE%2Bze5XLaWmhL401G2v3rR%2FQViVia3LNGnTHHmiB2VLQz03b8kO5i9ZNg%3D%3D";
+import {apiServiceKey} from '../router/apiInfo';
 
 export default {
     name : 'searchBar',
     data () {
         return {
             searchText : '',
+            searchVal : '',
+            errorStatus : false,
             searchTextStatus : false,
+            recommendStatus : false,
             countryList : [],
             retsultCountryList : [],
         }
     },
     mounted () {
-        axios.get(`${requestUrl}CountryCodeService2/getCountryCodeList2?${serviceKey}&returnType=JSON&numOfRows=237&pageNo=1`)
+        axios.get(`/1262000/CountryCodeService2/getCountryCodeList2?${apiServiceKey}&returnType=JSON&numOfRows=237&pageNo=1`)
         .then((response) =>  {
                 // 초기단계에서, 국가리스트를 option으로 출력해야 함.  
                 const countryList = response.data.data;
@@ -52,19 +58,38 @@ export default {
     },
     methods : {
         getCountryInfo () {
-           this.$router.push('/country');
+           if(this.searchText.length == 0) {
+               this.$refs.searchText.focus();
+           } else {
+                this.$router.push({
+                    name: 'country',
+                    query : {
+                        country_name : this.searchText,
+                        country_en : this.searchVal
+                    }
+                });
+           }
         },
         checkInputText () {
             const searchTextInput = this.$refs.searchText;
-            (searchTextInput.value.length > 0) ? this.searchTextStatus = true : this.searchTextStatus = false;
+            if (searchTextInput.value.length ==  0 || this.retsultCountryList.length == 0) {
+                this.searchTextStatus, this.recommendStatus = false;
+                this.errorStatus = true;
+            }  else {
+                this.searchTextStatus, this.recommendStatus = true
+                this.errorStatus = false;
+            } 
         },
         getCountry (e) {
             let input_text = e.target.value;
             this.retsultCountryList = this.countryList.filter(x => x.country_nm.indexOf(input_text) >= 0);
         },
         setCountry (e) {
-            this.searchText = e.target.textContent
+            this.searchText = e.target.textContent;
+            this.searchVal = this.retsultCountryList[0].country_iso_alp2;
             this.searchTextStatus = true;
+            this.recommendStatus = false;
+            this.$refs.submit_btn.focus();
         }
     }
 }
@@ -99,7 +124,6 @@ export default {
         transition:font-size 0.3s, top 0.3s;
     }
     #country_list{
-        display:none;
         width:200px;
         position:absolute;
         top:50px;
