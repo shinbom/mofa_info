@@ -2,10 +2,10 @@
     <div id="modal" tabindex="-1" ref="modal">
         <div class="content">
             <header>
-                <h3>{{this.selectedNotice.title}}</h3>
-                <span>{{this.selectedNotice.written_dt}}</span>
+                <h3>{{this.$store.state.modalContent.title}}</h3>
+                <span>{{this.$store.state.modalContent.writtenDate}}</span>
             </header>
-            <div v-html="this.notice_detail"></div>
+            <div v-html="this.$store.state.modalContent.text"></div>
             <button type="button" id="modal_close" @click="modalClose">
                 <font-awesome-icon :icon="['far', 'circle-xmark']" size="2x"/>
             </button>
@@ -14,42 +14,40 @@
 </template>
 
 <script>
+import { mapState ,mapMutations } from 'vuex';
+
 export default {
     name : 'modal',
-    data () { 
-        return {
-            notice_detail : '',
-        }
-    },
-    props : {
-        selectedIndex : Number,
-        selectedNotice : Object
-    },
     created () {
         // ○, 다., ※인 경우, 줄바꿈 처리가 되도록 해야 함.
         // 콘텐츠에 제목과 동일한 텍스트가 있는 경우에 제거
-        console.log(this.selectedNotice.txt_origin_cn);
         // console.log(this.selectedNotice.txt_origin_cn.split(/^[&nbsp;&nbsp;|①|②|③|④|⑤|□|○|△|\*.][가-하]다\.$/g));
 
         // replace가 좋을지, split후, 텍스트 반환이 좋을지 고민이 필요해 보임.
         // this.selectedNotice.txt_origin_cn.split(/&nbsp;&nbsp;|①|②|③|④|⑤|□|○|△|\*.|[가-하]다\.$/g);
-        this.notice_detail = this.selectedNotice.txt_origin_cn.replace(/&nbsp;&nbsp;|①|②|③|④|⑤|□|○|△|\*.|다\./g, (x) => {
-            if (x == '다.') {
-                return x + '<br>';
-            } else if (x == '&nbsp;&nbsp;') {
-                return '';
-            }else {
-                return '<br>' + x;
-            }
-        }).trim();
+        // this.notice_detail = this.selectedNotice.txt_origin_cn.replace(/&nbsp;&nbsp;|①|②|③|④|⑤|□|○|△|\*.|다\./g, (x) => {
+        //     if (x == '다.') {
+        //         return x + '<br>';
+        //     } else if (x == '&nbsp;&nbsp;') {
+        //         return '';
+        //     }else {
+        //         return '<br>' + x;
+        //     }
+        // }).trim();
     },
     mounted () {
         this.$refs.modal.focus();
     },
+    computed : {
+        ...mapState(['modalContent', 'modalStatus', 'selectedIndex'])
+    },
     methods : {
+        ...mapMutations['modalClose'],
+
         modalClose () {
-            this.$emit('modalClose');
+            this.$store.commit('closeModal');
         }
+
     }
 }
 </script>
@@ -69,7 +67,8 @@ export default {
             }
         }
         .content{
-            width:800px;
+            width:80%;
+            max-width:800px;
             padding:80px 40px 80px 30px;
             position:absolute;
             top:50%;
@@ -101,6 +100,4 @@ export default {
             }
         }
     }
-
-
 </style>

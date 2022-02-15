@@ -25,16 +25,16 @@
                     </ul>
                     <ul class="btn_lists">
                         <li>
-                            <button type="button">결제 정보 확인</button>
+                            <button type="button" @click="activeModalIndex(0, {title: `${countryInfomation.country_name} 결제 정보`, written_dt : undefined, txt_origin_cn :  `${countryInfomation.usageInfo}`})">결제 정보</button>
                         </li>
                         <li>
-                            <button type="button">체류 정보</button>
+                            <button type="button" @click="activeModalIndex(0, {title: `${countryInfomation.country_name} 체류 정보`, written_dt : undefined, txt_origin_cn : `${countryInfomation.visitInfo}`})">체류 정보</button>
                         </li>
                         <li>
-                            <button type="button">비상사태 발생시 정보</button>
+                            <button type="button" @click="activeModalIndex(0, {title: `${countryInfomation.country_name} 비상사태 발생시 정보`, written_dt : undefined, txt_origin_cn : `${countryInfomation.emergencyInfo}`})">비상사태 발생시 정보</button>
                         </li>
                         <li>
-                            <button type="button">인터넷 환경 정보</button>
+                            <button type="button" @click="activeModalIndex(0, {title: `${countryInfomation.country_name} 인터넷 환경 정보`, written_dt : undefined, txt_origin_cn : `${countryInfomation.internetStatus}`})">인터넷 환경 정보</button>
                         </li>
                     </ul>
                 </div>
@@ -44,7 +44,9 @@
                     <h4>{{this.countryInfomation.country_name}} 한국발 입국자 조치</h4>
                     <p v-if="this.countryInfomation.covidNotice.length == 0" class="not_work">{{this.countryInfomation.country}} 한국발 입국자 조치가 없습니다.</p>
                     <ul v-else>
-                        <li v-for="(item, index) in this.countryInfomation.covidNotice" :key="index">{{item}}</li>
+                        <li v-for="(item, index) in this.countryInfomation.covidNotice" :key="index">
+                            <button type="button" @click="activeModalIndex(index)">{{item}}</button>
+                        </li>
                     </ul>
                 </section>
                 <section>
@@ -52,20 +54,24 @@
                     <p v-if="this.countryInfomation.safetyNotice.length == 0">{{this.countryInfomation.country}} 안전공지가 없습니다.</p>
                     <ul v-else>
                         <li v-for="(item, index) in this.countryInfomation.safetyNotice[0]" :key="index">
-                            <button type="button">{{item.title}}</button>
+                            <button type="button" @click="activeModalIndex(index, countryInfomation.safetyNotice[0][index])">
+                                <span class="title">{{item.title}}</span>
+                                <span class="date">{{item.wrt_dt}}</span>
+                            </button>
                         </li>
                     </ul>
                 </section>
             </div>
         </div>
-        <!-- <Modal></Modal> -->
+        <Modal v-if="modalStatus"></Modal>
     </main>
 </template>
 
 <script>
 import axios from 'axios';
-// import Modal from '../components/Modal.vue';
+import Modal from '../components/Modal.vue';
 import {apiServiceKey} from '../router/apiInfo';
+import {mapState, mapMutations} from 'vuex';
 
 export default {
     name : 'Detail',
@@ -85,11 +91,13 @@ export default {
                 covidNotice :[], 
                 safetyNotice : [],
             },
-            modalStatus : false,
         }
     },
     components :{
-        // Modal
+        Modal
+    },
+    computed :{
+      ...mapState(['modalContent', 'modalStatus', 'selectedIndex'])
     },
     created () {
         axios.get(`/B410001/natnInfoService/natnInfo?${apiServiceKey}&type=json&isoWd2CntCd=${this.countryInfomation.country_en}`)
@@ -120,10 +128,10 @@ export default {
 
         // 국가 별 한국발 입국자 조치 데이터 요청
         axios.get(`/1262000/CountryKoreaDepartureService/getCountryKoreaDepartureList?${apiServiceKey}&returnType=JSON&numOfRows=10&cond[country_iso_alp2::EQ]=${this.countryInfomation.country_en}`).then((response) => {
-           let covidNoticeList = response.data.data;
-           if ( covidNoticeList.length > 0 ) {
+        let covidNoticeList = response.data.data;
+        if ( covidNoticeList.length > 0 ) {
             this.countryInfomation.covidNotice.push(covidNoticeList);
-           }
+        }
         })
         .catch ((error) => {
             console.log(`국가별 한국발 입국자 조치를 불러오는 데 실패하였습니다. : ${error}`);
@@ -137,6 +145,20 @@ export default {
         .catch ((error) => {
             console.log(`안전공지를 불러오는 데 실패하였습니다. : ${error}`);
         })
+    },
+    methods : {
+         ...mapMutations(['activeModal']),
+
+        activeModalIndex(index, data) {
+            this.$store.commit('activeModal', {
+                selectedIndex : index, 
+                contents : {
+                    title : data.title,
+                    writtenDate : data.wrt_dt,
+                    text : data.txt_origin_cn 
+                }
+            });
+        }
     }
 }
 </script>
@@ -212,5 +234,23 @@ export default {
             margin-top:40px;
         }
         .not_work{text-align:center;}
+        button{
+            width:100%;
+            overflow:hidden;
+            text-align:left;
+            span{display:block;}
+            .title{
+                width:1000px;
+                white-space: nowrap;
+                overflow:hidden;
+                text-overflow: ellipsis;
+                float:left;
+            }
+            .date{
+                width:100px;
+                text-align:center;
+                float:right;
+            }
+        }
     }
 </style>

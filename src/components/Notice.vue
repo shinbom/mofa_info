@@ -3,15 +3,13 @@
         <h3>외교부 공지사항</h3>
         <ul>
             <li v-for="(item, index) in noticeArray" :key="index">
-                <button type="button" @click="activeModal()" ref="notice_list_btn">
+                <button type="button" @click="activeModalIndex(index, noticeArray[index])" ref="notice_list_btn">
                     <span class="title">{{noticeArray[index].title}}</span>
                     <span class="date">{{noticeArray[index].written_dt}}</span>
                 </button>
             </li>
         </ul>
-        <Modal 
-        v-if="this.$store.modalStatus" 
-        :bind:selectedNotice="this.$store.state.selectedIndex"></Modal>
+        <Modal v-if="modalStatus"></Modal>
     </div>
 </template>
 
@@ -19,14 +17,13 @@
 import axios from 'axios';
 import Modal from './Modal.vue';
 import {apiServiceKey} from '../router/apiInfo';
-import { mapMutations } from 'vuex';
+import { mapState ,mapMutations } from 'vuex';
 
 export default {
     name : 'notice',
     data () {
         return {
           noticeArray : [],
-          modalStatus : false,
         }
     },
     components : { 
@@ -42,9 +39,24 @@ export default {
         console.log(`리스트를 불러오는 데 실패하였습니다. : ${error}`);
       });
     },
+    computed :{
+      ...mapState(['modalContent', 'modalStatus', 'selectedIndex'])
+    },
     methods : {
       ...mapMutations(['activeModal']),
-    },
+
+      activeModalIndex(index, data) {
+        this.$store.commit('activeModal', {
+          selectedIndex : index, 
+          contents : {
+            title : data.title,
+            writtenDate : data.written_dt,
+            text : data.txt_origin_cn 
+          }
+        });
+      }
+      
+    }
 }
 </script>
 
