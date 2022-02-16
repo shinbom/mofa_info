@@ -14,7 +14,7 @@
         <!-- Custom DataList -->
         <ol id="country_list" ref="countryList" v-if="recommendStatus">
             <li v-for="(item, index) in retsultCountryList" :key="index">
-                <button type="button" @click="setCountry">{{item.country_nm}}</button>
+                <button type="button" @click="setCountry(index)">{{item.country_nm}}</button>
             </li>
         </ol>
         <button type="button" id="submit_btn" ref="submit_btn" @click="getCountryInfo">
@@ -97,9 +97,9 @@ export default {
             let input_text = e.target.value;
             this.retsultCountryList = this.countryList.filter(x => x.country_nm.indexOf(input_text) >= 0);
         },
-        setCountry (e) {
-            this.searchText = e.target.textContent;
-            this.searchVal = this.retsultCountryList[0].country_iso_alp2;
+        setCountry (index) {
+            this.searchText = this.retsultCountryList[index].country_nm;
+            this.searchVal = this.retsultCountryList[index].country_iso_alp2;
             this.searchTextStatus = true;
             this.recommendStatus = false;
             this.$refs.submit_btn.focus();
