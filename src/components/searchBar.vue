@@ -4,9 +4,9 @@
             id="searchText" 
             ref="searchText" 
             v-model="searchText" 
+            @change="checkInputText"
             @keydown="checkInputText"
             @keyup="getCountry"
-            @change="getCountry"
             :class="{ 'innerText' : searchTextStatus}"
             autocomplete="off"
         >
@@ -58,9 +58,16 @@ export default {
     },
     methods : {
         getCountryInfo () {
-           if(this.searchText.length == 0) {
-               this.$refs.searchText.focus();
-           } else {
+            /*
+                -- 검색어 검증 --
+
+                1. 텍스트가 없음.
+                2. 한글이 아님
+                3. 나라 텍스트가 아님 
+            */
+            if(this.searchText.length == 0 || this.searchText.match(/[가-하]/g).lentgh > 0) {
+                this.$refs.searchText.focus();
+            } else {
                 this.$router.push({
                     name: 'country',
                     query : {
@@ -68,16 +75,22 @@ export default {
                         country_en : this.searchVal
                     }
                 });
-           }
+            }
         },
         checkInputText () {
             const searchTextInput = this.$refs.searchText;
-            if (searchTextInput.value.length ==  0 || this.retsultCountryList.length == 0) {
-                this.searchTextStatus, this.recommendStatus = false;
+            if (searchTextInput.value.length ==  0) {
+                this.searchTextStatus = false;
                 this.errorStatus = true;
             }  else {
-                this.searchTextStatus, this.recommendStatus = true
+                this.searchTextStatus = true
                 this.errorStatus = false;
+            } 
+
+            if (this.retsultCountryList.length == 0) {
+                this.recommendStatus = false;
+            }  else {
+                this.recommendStatus = true
             } 
         },
         getCountry (e) {

@@ -1,7 +1,8 @@
 <template>
     <div id="notice_list" class="wrap">
         <h3>외교부 공지사항</h3>
-        <ul>
+        <div class="loading" v-if="loadingStatus"></div>
+        <ul v-else>
             <li v-for="(item, index) in noticeArray" :key="index">
                 <button type="button" @click="activeModalIndex(index, noticeArray[index])" ref="notice_list_btn">
                     <span class="title">{{noticeArray[index].title}}</span>
@@ -24,6 +25,7 @@ export default {
     data () {
         return {
           noticeArray : [],
+          loadingStatus : true,
         }
     },
     components : { 
@@ -34,6 +36,7 @@ export default {
       .then((response) =>  {
         let notice_array = response.data.data;
         this.noticeArray = notice_array;
+        this.loadingStatus = false;
       })
       .catch(function(error) {
         console.log(`리스트를 불러오는 데 실패하였습니다. : ${error}`);
@@ -65,6 +68,9 @@ export default {
     border-radius:15px;
     padding:30px;
     background-color:#fff;
+    .loading{
+      height:480px;
+    }
     ul{
       margin-top:20px;
       li {
@@ -78,6 +84,7 @@ export default {
           span{display:block;}
           .title{
             width:1000px;
+            font-weight:700;
             white-space: nowrap;
             overflow:hidden;
             text-overflow: ellipsis;
@@ -95,25 +102,54 @@ export default {
   
 @media screen and (min-width : 768px) and (max-width : 1024px) {
   #notice_list{
-    .title{
-      width:100%;
-      float:none;
-    }
-    .date{
-      width:100%;
-      float:none;
+    ul{
+      margin-top:15px;
+      li {
+        button{
+          width:100%;
+          padding:10px;
+          overflow:hidden;
+          text-align:left;
+          background-color:#f2f4f6;
+          border-radius:10px;
+          span{display:block;}
+          .title{
+            width:100%;
+            margin-bottom:15px;
+            float:none;
+          }
+        }
+        &:nth-child(n+2){
+          margin-top:10px;
+        }
+      }
     }
   }
 }
 @media screen and (max-width : 767px){
   #notice_list{
-    .title{
-      width:100%;
-      float:none;
-    }
-    .date{
-      width:100%;
-      float:none;
+    padding:20px;
+    ul{
+      margin-top:15px;
+      li {
+        button{
+          width:100%;
+          padding:10px;
+          overflow:hidden;
+          text-align:left;
+          background-color:#f2f4f6;
+          border-radius:10px;
+          span{display:block;}
+          .title{
+            width:100%;
+            margin-bottom:10px;
+            float:none;
+          }
+        }
+        &:nth-child(n+2){
+          margin-top:20px;
+        }
+      }
     }
   }
 }

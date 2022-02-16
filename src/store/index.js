@@ -7,7 +7,7 @@ export const store = new Vuex.Store({
     state : {
         selectedIndex : 0,
         modalStatus : false,
-        modalContent : Object
+        modalContent : Object,
     },
     mutations : {
         activeModal (state, payload) {

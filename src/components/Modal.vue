@@ -24,16 +24,18 @@ export default {
         // console.log(this.selectedNotice.txt_origin_cn.split(/^[&nbsp;&nbsp;|①|②|③|④|⑤|□|○|△|\*.][가-하]다\.$/g));
 
         // replace가 좋을지, split후, 텍스트 반환이 좋을지 고민이 필요해 보임.
+
         // this.selectedNotice.txt_origin_cn.split(/&nbsp;&nbsp;|①|②|③|④|⑤|□|○|△|\*.|[가-하]다\.$/g);
-        // this.notice_detail = this.selectedNotice.txt_origin_cn.replace(/&nbsp;&nbsp;|①|②|③|④|⑤|□|○|△|\*.|다\./g, (x) => {
-        //     if (x == '다.') {
-        //         return x + '<br>';
-        //     } else if (x == '&nbsp;&nbsp;') {
-        //         return '';
-        //     }else {
-        //         return '<br>' + x;
-        //     }
-        // }).trim();
+        let result = this.$store.state.modalContent.text.replace(/&nbsp;&nbsp;|①|②|③|④|⑤|□|○|△|\*.|다\./g, (x) => {
+            if (x == '다.') {
+                return x + '<br>';
+            } else if (x == '&nbsp;&nbsp;') {
+                return '';
+            }else {
+                return '<br>' + x;
+            }
+        }).trim();
+        this.$store.state.modalContent.text = result;
     },
     mounted () {
         this.$refs.modal.focus();
@@ -98,6 +100,50 @@ export default {
                 top:10px;
                 right:20px;
             }
+        }
+    }
+    @media screen and (min-width : 768px) and (max-width : 1024px) {
+        #modal{
+            header{
+                h3{
+                    font-size:16px;
+                }
+                span{
+                    font-size:14px;
+                }
+            }
+            .content{
+                width:90%;
+                div{
+                    font-size:14px;
+                }
+            }
+        }
+    }
+    @media screen and (max-width : 767px){
+        #modal{
+            header{
+                h3{
+                    font-size:15px;
+                }
+                span{
+                    font-size:13px;
+                }
+            }
+            .content{
+                width:calc(100% - 30px);
+                padding:20px;
+                div{
+                    font-size:13px;
+                }
+                #modal_close{
+                    top:-24px;
+                    right:0;
+                    border-radius: 50%;
+                    background-color:#fff;
+                }
+            }
+           
         }
     }
 </style>

@@ -24,4 +24,14 @@ export default {
         padding:50px 0;
         background-color:#f2f4f6;
     }
+    @media screen and (min-width : 768px) and (max-width : 1200px) {
+        main{
+            padding:30px 0;
+        }
+    }
+    @media screen and (max-width : 767px){
+        main{
+            padding:20px 0;
+        }
+    }
 </style>

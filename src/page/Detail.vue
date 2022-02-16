@@ -3,27 +3,33 @@
         <div class="wrap">
             <header>
                 <div class="left_box">
-                    <figure>
+                    <div class="loading figure" v-if="loadingStatus"></div>
+                    <figure v-else>
                         <img :src="`${this.countryInfomation.imageUrl}`" alt="">
                     </figure>
-                    <h3>{{this.countryInfomation.country_name}}</h3>
+                    <div class="loading" v-if="loadingStatus"></div>
+                    <h3 v-else>{{this.countryInfomation.country_name}}</h3>
                 </div>
                 <div class="right_box">
                     <ul class="info_list">
                         <li>
                             <span class="title">언어정보</span>
-                            <span class="desc">{{this.countryInfomation.language }}</span>
+                            <span class="loading" v-if="loadingStatus"></span>
+                            <span class="desc" v-else>{{this.countryInfomation.language }}</span>
                         </li>
                         <li>
                             <span class="title">기후정보</span>
-                            <span class="desc">{{this.countryInfomation.climateInfo}}</span>
+                            <span class="loading" v-if="loadingStatus"></span>
+                            <span class="desc" v-else>{{this.countryInfomation.climateInfo}}</span>
                         </li>
                         <li>
                             <span class="title">환율</span>
-                            <span class="desc">{{this.countryInfomation.price}}</span>
+                            <span class="loading" v-if="loadingStatus"></span>
+                            <span class="desc" v-else>{{this.countryInfomation.price}}</span>
                         </li>
                     </ul>
-                    <ul class="btn_lists">
+                    <div class="loading" v-if="loadingStatus"></div>
+                    <ul class="btn_lists" v-else>
                         <li>
                             <button type="button" @click="activeModalIndex(0, {title: `${countryInfomation.country_name} 결제 정보`, written_dt : undefined, txt_origin_cn :  `${countryInfomation.usageInfo}`})">결제 정보</button>
                         </li>
@@ -42,24 +48,30 @@
             <div>
                 <section>
                     <h4>{{this.countryInfomation.country_name}} 한국발 입국자 조치</h4>
-                    <p v-if="this.countryInfomation.covidNotice.length == 0" class="not_work">{{this.countryInfomation.country}} 한국발 입국자 조치가 없습니다.</p>
-                    <ul v-else>
-                        <li v-for="(item, index) in this.countryInfomation.covidNotice" :key="index">
-                            <button type="button" @click="activeModalIndex(index)">{{item}}</button>
-                        </li>
-                    </ul>
+                    <div class="loading" v-if="loadingStatus"></div>
+                    <div v-else>
+                        <p v-if="this.countryInfomation.covidNotice.length == 0" class="not_work">{{this.countryInfomation.country}} 한국발 입국자 조치가 없습니다.</p>
+                        <ul v-else>
+                            <li v-for="(item, index) in this.countryInfomation.covidNotice" :key="index">
+                                <button type="button" @click="activeModalIndex(index)">{{item}}</button>
+                            </li>
+                        </ul>
+                    </div>
                 </section>
                 <section>
                     <h4>{{this.countryInfomation.country_name}} 안전공지</h4>
-                    <p v-if="this.countryInfomation.safetyNotice.length == 0">{{this.countryInfomation.country}} 안전공지가 없습니다.</p>
-                    <ul v-else>
-                        <li v-for="(item, index) in this.countryInfomation.safetyNotice[0]" :key="index">
-                            <button type="button" @click="activeModalIndex(index, countryInfomation.safetyNotice[0][index])">
-                                <span class="title">{{item.title}}</span>
-                                <span class="date">{{item.wrt_dt}}</span>
-                            </button>
-                        </li>
-                    </ul>
+                    <div class="loading" v-if="loadingStatus"></div>
+                    <div v-else>
+                        <p v-if="this.countryInfomation.safetyNotice.length == 0" class="not_work">{{this.countryInfomation.country}} 안전공지가 없습니다.</p>
+                        <ul v-else>
+                            <li v-for="(item, index) in this.countryInfomation.safetyNotice[0]" :key="index">
+                                <button type="button" @click="activeModalIndex(index, countryInfomation.safetyNotice[0][index])">
+                                    <span class="title">{{item.title}}</span>
+                                    <span class="date">{{item.wrt_dt}}</span>
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
                 </section>
             </div>
         </div>
@@ -91,13 +103,14 @@ export default {
                 covidNotice :[], 
                 safetyNotice : [],
             },
+            loadingStatus : true
         }
     },
     components :{
-        Modal
+        Modal,
     },
     computed :{
-      ...mapState(['modalContent', 'modalStatus', 'selectedIndex'])
+      ...mapState(['modalContent', 'modalStatus', 'selectedIndex']),
     },
     created () {
         axios.get(`/B410001/natnInfoService/natnInfo?${apiServiceKey}&type=json&isoWd2CntCd=${this.countryInfomation.country_en}`)
@@ -110,6 +123,7 @@ export default {
             this.countryInfomation.visitInfo = getCountryData.items[0].drvlsAcqsMthCntnt; // 체류정보
             this.countryInfomation.emergencyInfo = getCountryData.items[0].emgcyCntmsCheatCntnt; // 비상사태 발생시 정보
             this.countryInfomation.internetStatus = getCountryData.items[0].innetWifiCntnt; // 인터넷 환경 정보
+            this.loadingStatus = false
         })
         .catch((error) => {
             console.log(`국가정보를 불러오는 데 실패하였습니다. : ${error}`);
@@ -174,10 +188,13 @@ export default {
         .left_box{
             flex :1;
             margin-right:20px;
+            .loading.figure{
+                padding-top:65%;
+            }
             figure{
                 position:relative;
                 height:0;
-                padding-top:47%;
+                padding-top:65%;
                 img{
                     position:absolute;
                     top:50%;
@@ -187,6 +204,7 @@ export default {
                 }
             }
             h3{
+                margin-top:10px;
                 text-align:center;
             }
         }
@@ -194,7 +212,7 @@ export default {
             flex :3;
             .info_list {
                li {
-                    padding:5px 0;
+                    padding:10px 0;
                     .title{
                         padding:0 10px;
                         border-radius:0 10px 10px 0;
@@ -204,6 +222,9 @@ export default {
                         display:block;
                         margin-top:5px;
                         font-size:14px;
+                    }
+                    &:first-child{
+                        padding-top:0;
                     }
                     &:nth-child(n+2){
                         border-top:1px solid #cacaca;
@@ -253,4 +274,48 @@ export default {
             }
         }
     }
+    @media screen and (min-width : 768px) and (max-width : 1024px) {
+        header{
+                display:block;
+                .left_box{
+                    margin-right:0;
+                    margin-bottom:20px;
+                    .loading.figure{
+                        width:40%;
+                        margin:0 auto;
+                        padding-top:30%;
+                    }
+                    figure{
+                        padding-top:25%;
+                    }
+                }
+                .right_box{
+                    .btn_lists{
+                        justify-content: center;
+                    }
+                }
+            }
+            section{
+                padding:15px;
+            }
+    }
+    @media screen and (max-width : 767px){
+        header{
+            display:block;
+            .left_box{
+                margin-right:0;
+                margin-bottom:20px;
+            }
+            .right_box{
+                .btn_lists{
+                    justify-content: center;
+                }
+            }
+        }
+        section{
+            padding:15px;
+        }
+    }
+
+    
 </style>

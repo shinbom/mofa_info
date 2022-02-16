@@ -44,14 +44,32 @@ html{height:100vh;}
 }
 @media screen and (min-width : 768px) and (max-width : 1200px) {
   .wrap{
-    width:100%;
+    width:90%;
     padding:40px;
   }
 }
 @media screen and (max-width : 767px){
   .wrap{
-    width:100%;
+    width:90%;
     padding:20px;
+  }
+}
+.loading{
+    display:block;
+    width:100%;
+    height:40px;
+    margin-top:10px;
+    animation : shimmer 2s infinite linear;
+    background: linear-gradient(to right, #eff1f3 4%, #e2e2e2 25%, #eff1f3 36%);
+    background-size: 1000px 100%;
+    border-radius:10px;
+}
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
   }
 }
 </style>
